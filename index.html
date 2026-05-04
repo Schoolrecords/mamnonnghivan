@@ -611,7 +611,10 @@
       <div class="info-row"><div class="ico">✉</div><div><strong>Email</strong><span id="cfgEmail">email@truong.edu.vn</span></div></div>
       <div class="info-row"><div class="ico">🕐</div><div><strong>Giờ đón trẻ</strong>6:45 – 17:15 (T2 – T6)</div></div>
     </div>
-    <div class="map-frame"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=105.55%2C18.95%2C105.75%2C19.15&layer=mapnik" loading="lazy"></iframe></div>
+    <div class="map-frame" id="mapFrame">
+      <!-- v2026.06+: nội dung được render bởi renderMap() trong app.js dựa trên config.mapUrl
+           Nếu mapUrl rỗng → ẩn cả khu vực này. Nếu có → render iframe (embed code) hoặc card có nút (URL thường) -->
+    </div>
   </div>
 </section>
 
@@ -714,6 +717,16 @@
                 <span style="font-size:.85rem;font-weight:500">Xanh lá</span>
               </label>
             </div>
+          </div>
+          <hr class="adm-divider">
+          <div class="adm-field">
+            <label>📍 Bản đồ Google Maps <span style="color:#94a3b8;font-weight:400;font-size:.85em">(tuỳ chọn)</span></label>
+            <textarea id="admMapUrl" rows="2" placeholder="Dán link Google Maps tại đây, vd: https://maps.app.goo.gl/abc123" style="width:100%;font-family:'Consolas','Monaco',monospace;font-size:.88rem;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;resize:vertical"></textarea>
+            <small style="display:block;margin-top:6px;color:#64748b;font-size:.82rem;line-height:1.6">
+              <b>Cách lấy link:</b> Mở Google Maps trên điện thoại/máy tính → tìm tên trường → bấm <b>"Chia sẻ"</b> → bấm <b>"Sao chép liên kết"</b> → quay lại đây → dán (Ctrl+V).<br>
+              <b>Chấp nhận:</b> link ngắn <code>maps.app.goo.gl/...</code>, link đầy đủ <code>google.com/maps/...</code>, hoặc mã nhúng iframe đầy đủ.<br>
+              <b>Để trống:</b> trang sẽ ẩn phần bản đồ — vẫn hiện đầy đủ địa chỉ, điện thoại, email.
+            </small>
           </div>
           <div class="adm-actions">
             <button class="adm-btn adm-btn-primary" onclick="admSaveInfo()">💾 Lưu thay đổi</button>

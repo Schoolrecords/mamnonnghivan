@@ -1925,6 +1925,9 @@
     document.getElementById('admPrincipal').value = adm.principal || cfg.principal || '';
     document.getElementById('admLogoEmoji').value = adm.logoEmoji || cfg.logoEmoji || '🌱';
     document.getElementById('admSlogan').value = adm.slogan || cfg.slogan || '';
+    // v2026.06+: ô nhập Google Maps (tuỳ chọn)
+    const mapUrlEl = document.getElementById('admMapUrl');
+    if (mapUrlEl) mapUrlEl.value = adm.mapUrl || cfg.mapUrl || '';
     // Theme picker — chỉ 2 lựa chọn hợp lệ: 'navy' | 'green'. Mọi giá trị khác (legacy 'blue', 'pink', etc.) → navy.
     const rawTheme = adm.theme || cfg.themeName || 'navy';
     const curTheme = rawTheme === 'green' ? 'green' : 'navy';
@@ -1949,6 +1952,7 @@
 
   function admSaveInfo(){
     const checkedTheme = document.querySelector('#admThemePicker input:checked');
+    const mapUrlEl = document.getElementById('admMapUrl');
     const data = {
       schoolName: document.getElementById('admName').value.trim(),
       schoolAddr: document.getElementById('admAddr').value.trim(),
@@ -1958,7 +1962,8 @@
       principal: document.getElementById('admPrincipal').value.trim(),
       logoEmoji: document.getElementById('admLogoEmoji').value.trim() || '🌱',
       slogan: document.getElementById('admSlogan').value.trim(),
-      theme: checkedTheme ? checkedTheme.value : 'navy'
+      theme: checkedTheme ? checkedTheme.value : 'navy',
+      mapUrl: mapUrlEl ? mapUrlEl.value.trim() : ''
     };
     _admSet(data);
     admApplyConfig();
@@ -1976,7 +1981,8 @@
       ['Hiệu trưởng',   data.principal],
       ['Logo emoji',    data.logoEmoji],
       ['Slogan',         data.slogan],
-      ['Chủ đề màu',    data.theme]
+      ['Chủ đề màu',    data.theme],
+      ['Bản đồ',         data.mapUrl]
     ];
     admPostToGAS({action:'updateConfig', rows: rows}, function(ok, info){
       if(ok){
@@ -1989,6 +1995,70 @@
       setTimeout(() => msg.className = 'adm-alert', 6000);
     });
   }
+
+  // ============================================================================
+  // v2026.06+: renderMap — render bản đồ Google Maps trong section "Liên hệ"
+  // ============================================================================
+  // Hỗ trợ 3 dạng input từ admin:
+  //   1. Embed code đầy đủ: <iframe src="https://www.google.com/maps/embed?pb=..." ...></iframe>
+  //      → extract src, hiện iframe nhúng (cho phép zoom, pan, satellite ngay tại trang)
+  //   2. URL embed trực tiếp: https://www.google.com/maps/embed?pb=...
+  //      → hiện iframe nhúng tương tự
+  //   3. URL thông thường: https://maps.app.goo.gl/xxx, https://www.google.com/maps/place/...
+  //      → KHÔNG embed được (Google chặn X-Frame-Options) → hiện card đẹp với nút
+  //        "Xem trên Google Maps" mở tab mới
+  //   4. Rỗng / không hợp lệ → ẨN cả khu vực bản đồ (CSS .map-empty { display: none })
+  // ============================================================================
+  function renderMap(mapUrl, schoolAddr) {
+    const frame = document.getElementById('mapFrame');
+    if (!frame) return;
+    const trimmed = String(mapUrl || '').trim();
+    if (!trimmed) {
+      // Không cấu hình bản đồ → ẩn hoàn toàn khu vực
+      frame.classList.add('map-empty');
+      frame.innerHTML = '';
+      return;
+    }
+    frame.classList.remove('map-empty');
+
+    // Case 1: Embed code đầy đủ <iframe ... src="..." ...>
+    // Extract src an toàn - whitelist chỉ accept domain Google Maps để chặn XSS
+    const iframeMatch = trimmed.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+    if (iframeMatch && /^https:\/\/(www\.)?google\.com\/maps\/embed/i.test(iframeMatch[1])) {
+      frame.innerHTML = '<iframe src="' + escapeHtml(iframeMatch[1]) + '" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>';
+      return;
+    }
+
+    // Case 2: URL embed trực tiếp
+    if (/^https:\/\/(www\.)?google\.com\/maps\/embed/i.test(trimmed)) {
+      frame.innerHTML = '<iframe src="' + escapeHtml(trimmed) + '" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>';
+      return;
+    }
+
+    // Case 3: URL thông thường (maps.app.goo.gl, google.com/maps/place/...) → card với nút
+    // Validate URL bắt đầu bằng https:// để tránh XSS qua javascript:...
+    if (/^https?:\/\//i.test(trimmed)) {
+      const safeUrl = escapeHtml(trimmed);
+      const safeAddr = escapeHtml(String(schoolAddr || 'Vị trí trường'));
+      frame.innerHTML =
+        '<div class="map-card">' +
+          '<div class="map-card-pin">📍</div>' +
+          '<div class="map-card-info">' +
+            '<strong>Vị trí trường</strong>' +
+            '<span>' + safeAddr + '</span>' +
+          '</div>' +
+          '<a href="' + safeUrl + '" target="_blank" rel="noopener noreferrer" class="map-card-btn">' +
+            '🗺️ Xem trên Google Maps' +
+          '</a>' +
+        '</div>';
+      return;
+    }
+
+    // Không hợp lệ → ẩn
+    frame.classList.add('map-empty');
+    frame.innerHTML = '';
+  }
+
 
   function admApplyConfig(){
     const adm = _admGet();
@@ -2031,6 +2101,9 @@
       const fc = document.getElementById('footCopy');
       if(fc) fc.textContent = '© 2026 ' + schoolName + ' – ' + schoolAddr;
     }
+
+    // v2026.06+: Render bản đồ dynamic theo mapUrl từ config
+    renderMap(adm.mapUrl || cfg.mapUrl || '', schoolAddr);
     // Lưu ý: meta tag (Open Graph cho Zalo/FB) là BRAND CHUNG cố định
     // ("Hồ sơ Trường Mầm non · Giải pháp Công nghệ số") — không cập nhật theo từng trường
     // để bot social hiển thị đồng nhất khi share link (bot KHÔNG chạy JS).
