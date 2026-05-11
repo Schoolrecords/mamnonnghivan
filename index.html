@@ -3360,7 +3360,7 @@ function App() {
   useEffect(() => {
     const onStorage = (e) => {
       // Storage event chỉ fire ở tab KHÁC (không cùng tab) — nên chỉ catch khi user vừa update HSS bên kia
-      if (e.key === 'mnDienXuan_data' || e.key === 'hso-cache-v1') {
+      if (e.key === (window.HSO_CACHE_KEY || '') || e.key === 'hso-cache-v1') {
         setHssDataChangeNotice(true);
       }
     };
@@ -4384,7 +4384,7 @@ function HssMinhChungModal({ tree, onClose, onInsertCode, onRefresh }) {
           {(!tree || tree.length === 0) ? (
             <div className="hss-mc-empty">
               Chưa nhận được dữ liệu minh chứng từ Hồ sơ số.<br/>
-              <small>Vui lòng mở cửa sổ KĐCL từ Hồ sơ số (MNDienXuan) để dữ liệu đồng bộ tự động.</small>
+              <small>Vui lòng mở cửa sổ KĐCL từ trang Hồ sơ số để dữ liệu đồng bộ tự động.</small>
             </div>
           ) : filtered.length === 0 ? (
             <div className="hss-mc-empty">Không tìm thấy minh chứng khớp "{q}".</div>
@@ -8881,11 +8881,11 @@ class ErrBoundary extends React.Component {
         window.close();
         // Nếu window.close() không work (có thể do đã có history), fallback sau 150ms
         setTimeout(function(){
-          const url = window.__TDG_BACK_URL__ || '../MNDienXuan/MNDienXuan.html';
+          const url = window.__TDG_BACK_URL__ || './index.html';
           location.href = url;
         }, 150);
       }catch(e){
-        const url = window.__TDG_BACK_URL__ || '../MNDienXuan/MNDienXuan.html';
+        const url = window.__TDG_BACK_URL__ || './index.html';
         location.href = url;
       }
     };

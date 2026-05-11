@@ -1510,7 +1510,12 @@
   }, 250));
 
   // ============ FETCH DATA FROM GAS API ============
-  const CACHE_KEY = 'mnDienXuan_data';
+  // Cache key tự sinh theo tên folder (vd: MNNghiVan → hso_MNNghiVan_data)
+  // → mỗi trường có cache riêng, không đè nhau khi mở nhiều trường cùng 1 browser.
+  // Expose ra window để inline script trong index.html (storage event listener) dùng chung.
+  const _SCHOOL_FOLDER = (location.pathname.split('/').filter(function(p){ return p && !/\.html?$/i.test(p); }).pop()) || 'default';
+  const CACHE_KEY = 'hso_' + _SCHOOL_FOLDER + '_data';
+  window.HSO_CACHE_KEY = CACHE_KEY;
   const CACHE_VERSION = 'v2026.04'; // ⚠ TĂNG khi đổi schema (VD: thêm cột vào MinhChung) → mọi trình duyệt tự xoá cache cũ
   const CACHE_TTL = 10 * 60 * 1000; // 10 phút — dữ liệu cache hết hạn sau 10 phút
 
