@@ -61,20 +61,20 @@
   }
 
   .huy-hieu{
-    width:104px;height:104px;margin:0 auto 26px;
+    width:116px;height:116px;margin:0 auto 26px;
     display:flex;align-items:center;justify-content:center;
     border-radius:50%;
-    background:linear-gradient(145deg,#1d5fb4,#0f2c4d);
-    box-shadow:0 14px 30px rgba(15,44,77,.4),inset 0 2px 4px rgba(255,255,255,.25);
+    background:radial-gradient(circle at 50% 36%,#ffffff 0%,#eef2f7 68%,#dde5ee 100%);
+    box-shadow:0 16px 34px rgba(15,44,77,.28),inset 0 3px 6px rgba(255,255,255,.95),inset 0 -4px 10px rgba(150,170,195,.30);
     position:relative;
   }
   .huy-hieu .nhip{
     position:absolute;inset:0;border-radius:50%;
-    border:2px solid rgba(79,155,240,.55);
+    border:2px solid rgba(122,201,82,.55);
     animation:nhip 2.4s ease-out infinite;
   }
   @keyframes nhip{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.45);opacity:0}}
-  .huy-hieu svg{width:48px;height:48px;stroke:#fff}
+  .huy-hieu svg{width:80px;height:80px}
 
   h1{
     font-size:27px;font-weight:700;line-height:1.35;margin-bottom:14px;
@@ -118,8 +118,8 @@
     .the{padding:42px 26px 32px;border-radius:22px}
     h1{font-size:22px}
     .mo-ta{font-size:15px}
-    .huy-hieu{width:90px;height:90px}
-    .huy-hieu svg{width:42px;height:42px}
+    .huy-hieu{width:100px;height:100px}
+    .huy-hieu svg{width:68px;height:68px}
   }
 </style>
 </head>
@@ -129,11 +129,22 @@
 
     <div class="huy-hieu" aria-hidden="true">
       <span class="nhip"></span>
-      <!-- Biểu tượng tạm dừng -->
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="9"></circle>
-        <line x1="10" y1="9" x2="10" y2="15"></line>
-        <line x1="14" y1="9" x2="14" y2="15"></line>
+      <!-- Logo Trường Mầm non Nghi Văn: mầm cây -->
+      <svg viewBox="12 10 40 35" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="la1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a8e650"/><stop offset="100%" stop-color="#5dba2f"/>
+          </linearGradient>
+          <linearGradient id="la2" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#8edc40"/><stop offset="100%" stop-color="#4aab20"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="32" cy="38" rx="10" ry="6" fill="#8B6B52"/>
+        <ellipse cx="32" cy="37" rx="9" ry="5" fill="#9B7B62"/>
+        <path d="M32 36C32 36 31 24 32 18" stroke="#6BBF3B" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M33 22C38 14 46 12 49 15C51 17 47 24 40 27C35 29 33 26 33 22Z" fill="url(#la1)"/>
+        <path d="M31 26C26 19 18 17 15 20C13 22 17 28 24 30C29 32 31 29 31 26Z" fill="url(#la2)"/>
+        <path d="M34 30C37 26 42 25 44 27C45 28 43 32 38 33C35 34 34 32 34 30Z" fill="#a8e650" opacity="0.8"/>
       </svg>
     </div>
 
